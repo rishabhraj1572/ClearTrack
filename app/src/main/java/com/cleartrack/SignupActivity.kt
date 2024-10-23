@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContentView(R.layout.activity_signup)
 
         val back : Button = findViewById(R.id.back)
