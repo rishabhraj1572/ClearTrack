@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ClearTrack</string>
+    <string name="login">Login</string>
+    <string name="signup">Signup</string>
 </resources>
