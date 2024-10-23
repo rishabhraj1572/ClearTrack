@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "110095174878",
+    "project_id": "cleartrack-76d2b",
+    "storage_bucket": "cleartrack-76d2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110095174878:android:4079fc0e76e0fc05c6864f",
+        "android_client_info": {
+          "package_name": "com.cleartrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEeAuLqh0zlPXr2sa1mh7nXDgVVJ4teuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
