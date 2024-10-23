@@ -1,5 +1,6 @@
 package com.cleartrack
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -57,7 +58,8 @@ class SignupActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-                    finish()
+                    startActivity(Intent(this,HomeActivity::class.java))
+                    finishAffinity()
                 } else {
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }

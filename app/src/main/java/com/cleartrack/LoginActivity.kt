@@ -57,10 +57,9 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Successfully Logged In", Toast.LENGTH_SHORT).show()
-                    val intent =
-                        Intent(this, HomeActivity::class.java)
+                    val intent = Intent(this, HomeActivity::class.java)
                     startActivity(intent)
-                    finish()
+                    finishAffinity()
                 }else {
                     // Handle specific exceptions
                     val exception = task.exception
