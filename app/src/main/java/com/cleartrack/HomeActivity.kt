@@ -29,5 +29,11 @@ class HomeActivity : AppCompatActivity() {
         createOrder.setOnClickListener{
             startActivity(Intent(this,CreateOrderActivity::class.java))
         }
+
+        var scanQR: Button = findViewById(R.id.scanQr)
+
+        scanQR.setOnClickListener{
+            startActivity(Intent(this,QRScanner::class.java))
+        }
     }
 }

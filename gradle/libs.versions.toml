@@ -15,6 +15,7 @@ firebaseFirestore = "25.1.1"
 firebaseStorage = "21.0.1"
 firebaseDatabase = "21.0.0"
 firebaseMessaging = "24.0.3"
+quickieBundled = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +31,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+quickie-bundled = { module = "io.github.g00fy2.quickie:quickie-bundled", version.ref = "quickieBundled" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
