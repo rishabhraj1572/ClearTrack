@@ -23,5 +23,11 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this,MainActivity::class.java))
             finishAffinity()
         }
+
+        var createOrder: Button = findViewById(R.id.createOrder)
+
+        createOrder.setOnClickListener{
+            startActivity(Intent(this,CreateOrderActivity::class.java))
+        }
     }
 }
