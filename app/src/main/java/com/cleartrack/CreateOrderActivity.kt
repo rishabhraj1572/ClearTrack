@@ -90,10 +90,10 @@ class CreateOrderActivity : AppCompatActivity() {
             if(imgUri == null || expDocUri==null||impDocUri==null||goodsDocUri==null){
                 Toast.makeText(this,"Please attach required files",Toast.LENGTH_SHORT).show()
             }else{
-                uploadDocsToFirebase(orderID,"user_image",imgUri,false)
-                uploadDocsToFirebase(orderID,"exporter_doc",expDocUri,true)
-                uploadDocsToFirebase(orderID,"importer_doc",impDocUri,true)
-                uploadDocsToFirebase(orderID,"goods_doc",goodsDocUri,true)
+                uploadDocs(orderID,"user_image",imgUri,false)
+                uploadDocs(orderID,"exporter_doc",expDocUri,true)
+                uploadDocs(orderID,"importer_doc",impDocUri,true)
+                uploadDocs(orderID,"goods_doc",goodsDocUri,true)
             }
 
 
@@ -111,7 +111,7 @@ class CreateOrderActivity : AppCompatActivity() {
     }
 
     //uploading files
-    private fun uploadDocsToFirebase(orderID : String?,doc_name :String, uri : Uri?, is_pdf : Boolean){
+    private fun uploadDocs(orderID : String?,doc_name :String, uri : Uri?, is_pdf : Boolean){
 
         var fileReference: StorageReference?
         
