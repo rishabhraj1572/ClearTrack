@@ -5,11 +5,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
@@ -42,6 +46,8 @@ class CreateOrderActivity : AppCompatActivity() {
     private var impDocUri: Uri?=null
     private var goodsDocUri: Uri?=null
 
+    val db = Firebase.firestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
@@ -60,6 +66,19 @@ class CreateOrderActivity : AppCompatActivity() {
         expAttStatus = findViewById(R.id.exp_att_status)
         impAttStatus = findViewById(R.id.imp_att_status)
         goodsAttStatus = findViewById(R.id.goods_att_status)
+
+
+        //edit text items
+        val etName : EditText = findViewById(R.id.fullName)
+        val etPhone : EditText = findViewById(R.id.phoneNumber)
+        val etEmail : EditText = findViewById(R.id.email)
+        val etExpAdd : EditText = findViewById(R.id.exp_address)
+        val etImpAdd : EditText = findViewById(R.id.imp_address)
+        val etImpName : EditText = findViewById(R.id.imp_name)
+        val etImpPh : EditText = findViewById(R.id.imp_phone)
+        val etProductDesc : EditText = findViewById(R.id.product_desc)
+
+
 
         //for photo
         imageView.setOnClickListener {
@@ -86,6 +105,16 @@ class CreateOrderActivity : AppCompatActivity() {
         //submitBtn
         submitBtn.setOnClickListener{
 
+            //getting Strings
+            val name : String = etName.text.toString()
+            val phone : String = etPhone.text.toString()
+            val email : String = etEmail.text.toString()
+            val expAdd : String = etExpAdd.text.toString()
+            val impAdd : String = etImpAdd.text.toString()
+            val impName : String = etImpName.text.toString()
+            val impPh : String = etImpPh.text.toString()
+            val productDesc : String = etProductDesc.text.toString()
+
             //uploading all attached files
             if(imgUri == null || expDocUri==null||impDocUri==null||goodsDocUri==null){
                 Toast.makeText(this,"Please attach required files",Toast.LENGTH_SHORT).show()
@@ -98,9 +127,32 @@ class CreateOrderActivity : AppCompatActivity() {
 
 
             //firestore work here
+            val details = hashMapOf(
+                "name" to name,
+                "phone" to phone,
+                "email" to email,
+                "exporter_address" to expAdd,
+                "importer_address" to impAdd,
+                "importer_name" to impName,
+                "importer_number" to impPh,
+                "product_description" to productDesc,
+                "is_active" to true
+            )       //urls will be mapped withing uploadDocs function
 
+            db.collection("orders").document("${orderID}").set(details)
+                .addOnSuccessListener { documentReference ->
+                }
+                .addOnFailureListener { e ->
+                }
 
+        }
+    }
 
+    private fun getDownloadUrl(doc_name: String, is_pdf: Boolean): Task<Uri> {
+        if(is_pdf){
+            return FirebaseStorage.getInstance().reference.child("order_docs/$orderID/$doc_name.pdf").downloadUrl
+        }else{
+            return FirebaseStorage.getInstance().reference.child("order_docs/$orderID/$doc_name.jpg").downloadUrl
         }
     }
 
@@ -114,18 +166,50 @@ class CreateOrderActivity : AppCompatActivity() {
     private fun uploadDocs(orderID : String?,doc_name :String, uri : Uri?, is_pdf : Boolean){
 
         var fileReference: StorageReference?
-        
+
         if(is_pdf){
             fileReference = FirebaseStorage.getInstance().reference.child("order_docs/$orderID/$doc_name.pdf")
         }else{
             fileReference = FirebaseStorage.getInstance().reference.child("order_docs/$orderID/$doc_name.jpg")
         }
 
-
         if (uri != null) {
             fileReference.putFile(uri)
+
+                //1)upload successfull
                 .addOnSuccessListener {
-    //                Toast.makeText(this, "File uploaded successfully", Toast.LENGTH_SHORT).show()
+                    if(is_pdf){
+
+                        //2)getting url of the file
+                        getDownloadUrl(doc_name,true).addOnSuccessListener { uri ->
+                            val details = mapOf(doc_name to uri.toString())
+
+                            //3)setting url value into the order details document
+                            db.collection("orders").document("${orderID}").update(details)
+                                .addOnSuccessListener { documentReference ->
+                                }
+                                .addOnFailureListener { e ->
+                                }
+                        }.addOnFailureListener { exception ->
+                            println("Failed to retrieve download URL: ${exception.message}")
+                        }
+                    }else{
+
+                        //2)getting url of the file
+                        getDownloadUrl(doc_name,false).addOnSuccessListener { uri ->
+                            println("Download URL: ${uri.toString()}")
+                            val details = mapOf(doc_name to uri.toString())
+
+                            //3)setting url value into the order details document
+                            db.collection("orders").document("${orderID}").update(details)
+                                .addOnSuccessListener { documentReference ->
+                                }
+                                .addOnFailureListener { e ->
+                                }
+                        }.addOnFailureListener { exception ->
+                            println("Failed to retrieve download URL: ${exception.message}")
+                        }
+                    }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Failed to upload file $doc_name", Toast.LENGTH_SHORT).show()
