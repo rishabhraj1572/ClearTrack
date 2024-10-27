@@ -137,7 +137,7 @@ class CreateOrderActivity : AppCompatActivity() {
                 "importer_number" to impPh,
                 "product_description" to productDesc,
                 "is_active" to true
-            )       //urls will be mapped withing uploadDocs function
+            )       //urls will be mapped within uploadDocs function
 
             db.collection("orders").document("${orderID}").set(details)
                 .addOnSuccessListener { documentReference ->
