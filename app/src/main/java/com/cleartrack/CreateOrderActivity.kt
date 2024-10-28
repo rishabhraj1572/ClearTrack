@@ -47,6 +47,7 @@ class CreateOrderActivity : AppCompatActivity() {
     private var goodsDocUri: Uri?=null
 
     val db = Firebase.firestore
+    private var allDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -210,6 +211,16 @@ class CreateOrderActivity : AppCompatActivity() {
                             println("Failed to retrieve download URL: ${exception.message}")
                         }
                     }
+
+                    //all tasks done now create qr code with data as {orderID} and move to next activity
+                    if(!allDone){
+                        val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
+                        intent.putExtra("orderId",orderID)
+                        startActivity(intent)
+                        allDone = true
+                    }
+
+
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Failed to upload file $doc_name", Toast.LENGTH_SHORT).show()
