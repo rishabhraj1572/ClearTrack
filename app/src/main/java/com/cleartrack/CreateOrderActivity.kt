@@ -7,8 +7,10 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
@@ -31,6 +33,8 @@ class CreateOrderActivity : AppCompatActivity() {
     private lateinit var submitBtn: Button
 
     private var currentStatusTextView: TextView? = null
+
+    private var isLogisticPartner: Boolean = false // Default to false
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1
@@ -214,9 +218,10 @@ class CreateOrderActivity : AppCompatActivity() {
 
                     //all tasks done now create qr code with data as {orderID} and move to next activity
                     if(!allDone){
-                        val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
-                        intent.putExtra("orderId",orderID)
-                        startActivity(intent)
+                        //val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
+                        //intent.putExtra("orderId",orderID)
+                        //startActivity(intent)
+                        showLogisticPartnerDialog(orderID)
                         allDone = true
                     }
 
@@ -227,6 +232,77 @@ class CreateOrderActivity : AppCompatActivity() {
                 }
         }
     }
+
+    private fun showLogisticPartnerDialog(orderID: String?) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Are you a Logistic Partner?")
+        builder.setMessage("Please confirm if you are a Logistic partner.")
+
+        builder.setPositiveButton("Yes") { dialog, _ ->
+            isLogisticPartner = true // Store the response
+            dialog.dismiss()
+            showPartnerDetailsDialog(orderID) // Show the details dialog
+        }
+
+        builder.setNegativeButton("No") { dialog, _ ->
+            isLogisticPartner = false // Store the response
+            dialog.dismiss()
+            proceedToNextStep(orderID) // Proceed to the next step (QR activity)
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun showPartnerDetailsDialog(orderID: String?) {
+        // Create a dialog for entering company details
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Enter Your Company Details")
+
+        val companyNameInput = EditText(this)
+        companyNameInput.hint = "Company Name"
+        val locationInput = EditText(this)
+        locationInput.hint = "Location"
+        val pincodeInput = EditText(this)
+        pincodeInput.hint = "Pincode"
+
+        // LinearLayout for edit text
+        val layout = LinearLayout(this)
+        layout.orientation = LinearLayout.VERTICAL
+        layout.addView(companyNameInput)
+        layout.addView(locationInput)
+        layout.addView(pincodeInput)
+
+        builder.setView(layout)
+
+        builder.setPositiveButton("Submit") { dialog, _ ->
+            val companyName = companyNameInput.text.toString()
+            val location = locationInput.text.toString()
+            val pincode = pincodeInput.text.toString()
+            if (companyName.isNotEmpty() && location.isNotEmpty() && pincode.isNotEmpty()) {
+                // Store the details or process them as needed
+                // Proceed to the QR generation activity
+                proceedToNextStep(orderID, companyName, location, pincode)
+            } else {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            }
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun proceedToNextStep(orderID: String?, companyName: String? = null, location: String? = null, pincode: String? = null) {
+        // Proceed to the QR generation activity
+        val intent = Intent(this@CreateOrderActivity, QRGenerateActivity::class.java)
+        startActivity(intent)
+    }
+
 
     private fun openImagePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
