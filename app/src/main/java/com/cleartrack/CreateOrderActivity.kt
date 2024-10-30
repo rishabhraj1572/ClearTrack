@@ -34,7 +34,7 @@ class CreateOrderActivity : AppCompatActivity() {
 
     private var currentStatusTextView: TextView? = null
 
-    private var isLogisticPartner: Boolean = false // Default to false
+
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1
@@ -150,6 +150,13 @@ class CreateOrderActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                 }
 
+//            val currentTime = System.currentTimeMillis()
+//            db.collection("orders").document("${orderID}").collection(currentTime.toString()).document().set(details)
+//                .addOnSuccessListener { documentReference ->
+//                }
+//                .addOnFailureListener { e ->
+//                }
+
         }
     }
 
@@ -218,10 +225,10 @@ class CreateOrderActivity : AppCompatActivity() {
 
                     //all tasks done now create qr code with data as {orderID} and move to next activity
                     if(!allDone){
-                        //val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
-                        //intent.putExtra("orderId",orderID)
-                        //startActivity(intent)
-                        showLogisticPartnerDialog(orderID)
+                        val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
+                        intent.putExtra("orderId",orderID)
+                        startActivity(intent)
+
                         allDone = true
                     }
 
@@ -231,76 +238,6 @@ class CreateOrderActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failed to upload file $doc_name", Toast.LENGTH_SHORT).show()
                 }
         }
-    }
-
-    private fun showLogisticPartnerDialog(orderID: String?) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Are you a Logistic Partner?")
-        builder.setMessage("Please confirm if you are a Logistic partner.")
-
-        builder.setPositiveButton("Yes") { dialog, _ ->
-            isLogisticPartner = true // Store the response
-            dialog.dismiss()
-            showPartnerDetailsDialog(orderID) // Show the details dialog
-        }
-
-        builder.setNegativeButton("No") { dialog, _ ->
-            isLogisticPartner = false // Store the response
-            dialog.dismiss()
-            proceedToNextStep(orderID) // Proceed to the next step (QR activity)
-        }
-
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    private fun showPartnerDetailsDialog(orderID: String?) {
-        // Create a dialog for entering company details
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Enter Your Company Details")
-
-        val companyNameInput = EditText(this)
-        companyNameInput.hint = "Company Name"
-        val locationInput = EditText(this)
-        locationInput.hint = "Location"
-        val pincodeInput = EditText(this)
-        pincodeInput.hint = "Pincode"
-
-        // LinearLayout for edit text
-        val layout = LinearLayout(this)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.addView(companyNameInput)
-        layout.addView(locationInput)
-        layout.addView(pincodeInput)
-
-        builder.setView(layout)
-
-        builder.setPositiveButton("Submit") { dialog, _ ->
-            val companyName = companyNameInput.text.toString()
-            val location = locationInput.text.toString()
-            val pincode = pincodeInput.text.toString()
-            if (companyName.isNotEmpty() && location.isNotEmpty() && pincode.isNotEmpty()) {
-                // Store the details or process them as needed
-                // Proceed to the QR generation activity
-                proceedToNextStep(orderID, companyName, location, pincode)
-            } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-            }
-            dialog.dismiss()
-        }
-
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        val dialog = builder.create()
-        dialog.show()
-    }
-
-    private fun proceedToNextStep(orderID: String?, companyName: String? = null, location: String? = null, pincode: String? = null) {
-        // Proceed to the QR generation activity
-        val intent = Intent(this@CreateOrderActivity, QRGenerateActivity::class.java)
-        startActivity(intent)
     }
 
 
