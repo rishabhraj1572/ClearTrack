@@ -1,6 +1,7 @@
 package com.cleartrack
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -12,12 +13,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.ByteArrayOutputStream
 
 class CreateOrderActivity : AppCompatActivity() {
 
@@ -270,11 +275,28 @@ class CreateOrderActivity : AppCompatActivity() {
             PICK_IMAGE_REQUEST -> {
                 if (resultCode == RESULT_OK && data != null) {
                     val imageUri: Uri? = data.data
-                    imageView.setImageURI(imageUri) //replace with glide or set image size up to 500kb
+                    if (imageUri != null) {
+                        try {
+                            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+                            val outputStream = ByteArrayOutputStream()
 
-                    //imageUri here
-                    imgUri = imageUri
+                            // Compress bitmap to JPEG, quality 85%, to strip metadata
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                            val byteArray = outputStream.toByteArray()
 
+                            Glide.with(this)
+                                .load(byteArray)
+                                .apply(RequestOptions()
+                                    .override(150, 150)
+                                    .centerCrop())
+                                .into(imageView)
+                            imgUri = imageUri
+
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
             }
             PICK_PDF_REQUEST_EXPORTER -> {
