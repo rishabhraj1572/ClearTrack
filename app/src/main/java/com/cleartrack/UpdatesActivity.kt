@@ -2,9 +2,11 @@ package com.cleartrack
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
@@ -17,14 +19,24 @@ class UpdatesActivity : AppCompatActivity() {
 
     val items: ArrayList<UpdateItem> = arrayListOf()
 
+    private lateinit var logistic : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
+
+        logistic = intent.getStringExtra("isLogistic").toString()
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val updateBtn : Button = findViewById(R.id.update)
+
+        if(logistic=="true") {
+            updateBtn.visibility = View.VISIBLE
+        } else {
+            updateBtn.visibility=View.GONE
+        }
 
         updateBtn.setOnClickListener{
             val orderId="GCvCcyt05XPcOcgceiadWblcLe22_1731254417981"

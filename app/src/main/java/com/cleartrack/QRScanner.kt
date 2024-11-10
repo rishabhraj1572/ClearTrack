@@ -12,6 +12,7 @@ import io.github.g00fy2.quickie.ScanQRCode
 class QRScanner : AppCompatActivity() {
 
     private var qrContent: String? = null
+    private var logistic :String? = null
     private val scanQrCodeLauncher = registerForActivityResult(ScanQRCode()) { result ->
         getResult(result)
     }
@@ -22,6 +23,9 @@ class QRScanner : AppCompatActivity() {
         setContentView(R.layout.activity_qr_scanner)
         scanQrCodeLauncher.launch(null)
 //        finish()
+
+         logistic = intent.getStringExtra("isLogistic")
+        //Toast.makeText(this,logistic,Toast.LENGTH_LONG).show()
 
 
     }
@@ -41,9 +45,9 @@ class QRScanner : AppCompatActivity() {
         Log.d("QR RESULT", "QR content: $qrContent")
 
         val i : Intent = Intent(this,UpdatesActivity::class.java)
-        i.putExtra("orderId",qrContent)
-
-        startActivity(Intent(this,UpdatesActivity::class.java))
+        i.putExtra("isLogistic",logistic)
+        //startActivity(Intent(this,UpdatesActivity::class.java))
+        startActivity(i)
         finish()
 
 
