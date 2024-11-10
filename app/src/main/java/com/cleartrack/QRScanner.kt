@@ -39,8 +39,13 @@ class QRScanner : AppCompatActivity() {
         }
 
         Log.d("QR RESULT", "QR content: $qrContent")
+
+        val i : Intent = Intent(this,UpdatesActivity::class.java)
+        i.putExtra("orderId",qrContent)
+
         startActivity(Intent(this,UpdatesActivity::class.java))
         finish()
+
 
 
 //        Toast.makeText(this, qrContent ?: "No content found", Toast.LENGTH_SHORT).show()

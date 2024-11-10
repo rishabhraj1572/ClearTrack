@@ -1,12 +1,21 @@
 package com.cleartrack
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 
 class UpdatesActivity : AppCompatActivity() {
+
+
+    val db = Firebase.firestore
+
+    val items: ArrayList<UpdateItem> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -17,17 +26,28 @@ class UpdatesActivity : AppCompatActivity() {
 
         val updateBtn : Button = findViewById(R.id.update)
 
+        updateBtn.setOnClickListener{
+            val orderId="GCvCcyt05XPcOcgceiadWblcLe22_1731254417981"
+            db.collection("orders").document(orderId).collection("updates").get()
+                .addOnSuccessListener{ task ->
+
+                    for (document in task) {
+                        val location = document.get("location").toString()
+                        val logistic = document.get("logistic").toString()
+                        val pincode = document.get("pincode").toString()
+                        val time = document.get("time").toString()
+
+                        Log.e("LOCATION",location)
+
+                        items.add(UpdateItem(location, logistic, pincode, time))
+                    }
+                    val adapter = UpdatesAdapter(items)
+                    recyclerView.adapter = adapter
+                }
+
+        }
 
 
-        val items = listOf(
-            UpdateItem("Text11", "Text12", "Text13", "Text14"),
-            UpdateItem("Text21", "Text22", "Text23", "Text24"),
-            UpdateItem("Text31", "Text32", "Text33", "Text34"),
-            UpdateItem("Text41", "Text42", "Text43", "Text44")
-        )
 
-        // Set the adapter
-        val adapter = UpdatesAdapter(items)
-        recyclerView.adapter = adapter
     }
 }
