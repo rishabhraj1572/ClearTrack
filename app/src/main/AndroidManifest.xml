@@ -51,6 +51,9 @@
         <activity
             android:name=".QRGenerateActivity"
             android:exported="true"></activity>
+        <activity
+            android:name=".UpdatesActivity"
+            android:exported="true"></activity>
     </application>
 
 </manifest>
