@@ -23,6 +23,9 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class CreateOrderActivity : AppCompatActivity() {
 
@@ -129,7 +132,7 @@ class CreateOrderActivity : AppCompatActivity() {
             if(imgUri == null || expDocUri==null||impDocUri==null||goodsDocUri==null){
                 Toast.makeText(this,"Please attach required files",Toast.LENGTH_SHORT).show()
             }else{
-                uploadDocs(orderID,"user_image",imgUri,false)
+                uploadDocs(orderID,"user_image",compressImg(imgUri),false)
                 uploadDocs(orderID,"exporter_doc",expDocUri,true)
                 uploadDocs(orderID,"importer_doc",impDocUri,true)
                 uploadDocs(orderID,"goods_doc",goodsDocUri,true)
@@ -165,6 +168,45 @@ class CreateOrderActivity : AppCompatActivity() {
         }
     }
 
+    private fun compressImg(uri: Uri?) : Uri? {
+        try {
+            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            val maxFileSize = 500 * 1024 // 500 KB in bytes
+            var quality = 90
+            val outputStream = ByteArrayOutputStream()
+
+            while (true) {
+                outputStream.reset()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+
+                if (outputStream.toByteArray().size <= maxFileSize || quality <= 5) {
+                    break
+                }
+                quality -= 5 // Reduce the quality by 5 in each iteration
+            }
+
+            val byteArray = outputStream.toByteArray()
+
+            val tempFile = File.createTempFile("compressed_image", ".jpg", cacheDir)
+            try {
+                val fileOutputStream = FileOutputStream(tempFile)
+                fileOutputStream.write(byteArray)
+                fileOutputStream.flush()
+                fileOutputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+            val compressedImageUri = Uri.fromFile(tempFile)
+            return compressedImageUri
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
+        }
+        return uri
+    }
+
     private fun getDownloadUrl(doc_name: String, is_pdf: Boolean): Task<Uri> {
         if(is_pdf){
             return FirebaseStorage.getInstance().reference.child("order_docs/$orderID/$doc_name.pdf").downloadUrl
@@ -181,7 +223,6 @@ class CreateOrderActivity : AppCompatActivity() {
 
     //uploading files
     private fun uploadDocs(orderID : String?,doc_name :String, uri : Uri?, is_pdf : Boolean){
-
         var fileReference: StorageReference?
 
         if(is_pdf){
@@ -211,7 +252,6 @@ class CreateOrderActivity : AppCompatActivity() {
                             println("Failed to retrieve download URL: ${exception.message}")
                         }
                     }else{
-
                         //2)getting url of the file
                         getDownloadUrl(doc_name,false).addOnSuccessListener { uri ->
                             println("Download URL: ${uri.toString()}")
@@ -276,26 +316,14 @@ class CreateOrderActivity : AppCompatActivity() {
                 if (resultCode == RESULT_OK && data != null) {
                     val imageUri: Uri? = data.data
                     if (imageUri != null) {
-                        try {
-                            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
-                            val outputStream = ByteArrayOutputStream()
+                        imgUri=imageUri
 
-                            // Compress bitmap to JPEG, quality 85%, to strip metadata
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
-                            val byteArray = outputStream.toByteArray()
-
-                            Glide.with(this)
-                                .load(byteArray)
-                                .apply(RequestOptions()
-                                    .override(150, 150)
-                                    .centerCrop())
-                                .into(imageView)
-                            imgUri = imageUri
-
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            Toast.makeText(this, "Error loading image", Toast.LENGTH_SHORT).show()
-                        }
+                        Glide.with(this)
+                            .load(imageUri)
+                            .apply(RequestOptions()
+                                .override(150, 150)
+                                .centerCrop())
+                            .into(imageView)
                     }
                 }
             }
