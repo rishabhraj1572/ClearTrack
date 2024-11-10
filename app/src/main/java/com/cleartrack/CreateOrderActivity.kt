@@ -168,6 +168,7 @@ class CreateOrderActivity : AppCompatActivity() {
         }
     }
 
+
     private fun compressImg(uri: Uri?) : Uri? {
         try {
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
