@@ -1,6 +1,7 @@
 package com.cleartrack
 
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +14,10 @@ class UpdatesActivity : AppCompatActivity() {
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val updateBtn : Button = findViewById(R.id.update)
+
+
 
         val items = listOf(
             UpdateItem("Text11", "Text12", "Text13", "Text14"),
