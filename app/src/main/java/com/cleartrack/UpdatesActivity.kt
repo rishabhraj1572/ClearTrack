@@ -1,5 +1,6 @@
 package com.cleartrack
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -20,6 +21,7 @@ class UpdatesActivity : AppCompatActivity() {
     val items: ArrayList<UpdateItem> = arrayListOf()
 
     private lateinit var logistic : String
+    private lateinit var showdetails : Button
     private lateinit var orderId : String
     lateinit var recyclerView: RecyclerView
 
@@ -31,6 +33,7 @@ class UpdatesActivity : AppCompatActivity() {
         orderId = intent.getStringExtra("orderId").toString()
 
         recyclerView = findViewById(R.id.recyclerView)
+        showdetails=findViewById<Button>(R.id.showdetails)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         showUpdates(orderId)
@@ -41,6 +44,12 @@ class UpdatesActivity : AppCompatActivity() {
             updateBtn.visibility = View.VISIBLE
         } else {
             updateBtn.visibility=View.GONE
+        }
+
+        showdetails.setOnClickListener {
+            val intent = Intent(this, ShowDetailsActiivty::class.java)
+            intent.putExtra("orderId",orderId)
+            startActivity(intent)
         }
 
         updateBtn.setOnClickListener{

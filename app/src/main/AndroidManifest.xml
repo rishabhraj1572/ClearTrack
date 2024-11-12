@@ -22,6 +22,9 @@
         android:theme="@style/Theme.ClearTrack"
         tools:targetApi="31">
         <activity
+            android:name=".ShowDetailsActiivty"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -32,25 +35,25 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".SignupActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".HomeActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".CreateOrderActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".QRScanner"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".QRGenerateActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".UpdatesActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>
