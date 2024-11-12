@@ -51,6 +51,9 @@
         <activity
             android:name=".UpdatesActivity"
             android:exported="true"></activity>
+        <activity
+            android:name=".ShowDetailsActiivty"
+            android:exported="true"></activity>
     </application>
 
 </manifest>

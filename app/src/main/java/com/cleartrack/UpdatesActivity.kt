@@ -1,5 +1,6 @@
 package com.cleartrack
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,11 +11,16 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class UpdatesActivity : AppCompatActivity() {
 
 
+    private lateinit var adapter: UpdatesAdapter
     val db = Firebase.firestore
 
     val items: ArrayList<UpdateItem> = arrayListOf()
@@ -23,15 +29,23 @@ class UpdatesActivity : AppCompatActivity() {
     private lateinit var orderId : String
     lateinit var recyclerView: RecyclerView
 
+    private lateinit var auth: FirebaseAuth
+    private lateinit var userId: String
+
+    private lateinit var showdetails : Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
+
+        userId = auth.uid.toString()
 
         logistic = intent.getStringExtra("isLogistic").toString()
         orderId = intent.getStringExtra("orderId").toString()
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        showdetails=findViewById<Button>(R.id.showdetails)
 
         showUpdates(orderId)
 
@@ -43,7 +57,39 @@ class UpdatesActivity : AppCompatActivity() {
             updateBtn.visibility=View.GONE
         }
 
+        showdetails.setOnClickListener {
+            val intent = Intent(this, ShowDetailsActiivty::class.java)
+            intent.putExtra("orderId",orderId)
+            startActivity(intent)
+        }
+
         updateBtn.setOnClickListener{
+
+            db.collection("users").document(userId).get().addOnSuccessListener {
+                value->
+                val location : String = value.get("address").toString()
+                val company : String = value.get("company").toString()
+                val pincode : String = value.get("pincode").toString()
+
+                val currentTime = System.currentTimeMillis().toString()
+
+                val updateValues = mapOf(
+                    "location" to location,
+                    "logistics" to company,
+                    "pincode" to pincode,
+                    "time" to currentTime,
+                    "status" to getStatus()
+                )
+
+                db.collection("orders").document(orderId).collection("updates")
+                    .document(currentTime).set(updateValues).addOnSuccessListener {
+
+                        items.clear()
+                        adapter.notifyDataSetChanged()
+                        showUpdates(orderId)
+                    }
+
+            }
 
 
         }
@@ -52,22 +98,48 @@ class UpdatesActivity : AppCompatActivity() {
 
     }
 
-    private fun showUpdates(orderId: String) {
-        db.collection("orders").document(orderId).collection("updates").get()
-            .addOnSuccessListener{ task ->
+    private fun getStatus(): String {
+        if (items.size > 1) {
+            val lastItem = items[items.size - 1]
+            val secondLastItem = if (items.size > 1) items[items.size - 2] else null
 
+            if (secondLastItem!=null && lastItem == secondLastItem) {
+                return "Dispatched"
+            }else{
+                return "Received"
+            }
+        }
+
+        return ""
+
+    }
+
+    private fun showUpdates(orderId: String) {
+        db.collection("orders")
+            .document(orderId)
+            .collection("updates")
+            .get()
+            .addOnSuccessListener { task ->
+                items.clear()
                 for (document in task) {
                     val location = document.get("location").toString()
                     val logistic = document.get("logistic").toString()
                     val pincode = document.get("pincode").toString()
-                    val time = document.get("time").toString()
+                    val time = document.get("time") as Long
 
-                    Log.e("LOCATION",location)
-
-                    items.add(UpdateItem(location, logistic, pincode, time))
+                    val formatter = SimpleDateFormat("hh:mm a, dd-MM-yyyy", Locale.getDefault())
+                    val formattedTime = formatter.format(Date(time))
+                    items.add(UpdateItem(location, logistic, pincode, formattedTime, time))
                 }
-                val adapter = UpdatesAdapter(items)
+
+                items.sortBy { it.time }
+
+                adapter = UpdatesAdapter(items)
                 recyclerView.adapter = adapter
             }
+            .addOnFailureListener { e ->
+                Log.e("ERROR", "Failed to fetch updates: ${e.message}")
+            }
     }
+
 }
