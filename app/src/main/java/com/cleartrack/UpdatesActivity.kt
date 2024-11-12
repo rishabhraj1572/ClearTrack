@@ -26,23 +26,19 @@ class UpdatesActivity : AppCompatActivity() {
     val items: ArrayList<UpdateItem> = arrayListOf()
 
     private lateinit var logistic : String
-    private lateinit var showdetails : Button
     private lateinit var orderId : String
     lateinit var recyclerView: RecyclerView
 
     private lateinit var auth: FirebaseAuth
-    private var userId: String? = null
+    private lateinit var userId: String
 
-
-
+    private lateinit var showdetails : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
-
         auth = FirebaseAuth.getInstance()
         userId = auth.uid.toString()
-
 
         logistic = intent.getStringExtra("isLogistic").toString()
         orderId = intent.getStringExtra("orderId").toString()
@@ -69,7 +65,7 @@ class UpdatesActivity : AppCompatActivity() {
 
         updateBtn.setOnClickListener{
 
-            db.collection("users").document(userId!!).get().addOnSuccessListener {
+            db.collection("users").document(userId).get().addOnSuccessListener {
                 value->
                 val location : String = value.get("address").toString()
                 val company : String = value.get("company").toString()
@@ -129,11 +125,12 @@ class UpdatesActivity : AppCompatActivity() {
                     val location = document.get("location").toString()
                     val logistic = document.get("logistic").toString()
                     val pincode = document.get("pincode").toString()
-                    val time = document.get("time") as Long
+                    val time = document.get("time")
+                    val t = time as Long
 
                     val formatter = SimpleDateFormat("hh:mm a, dd-MM-yyyy", Locale.getDefault())
                     val formattedTime = formatter.format(Date(time))
-                    items.add(UpdateItem(location, logistic, pincode, formattedTime, time))
+                    items.add(UpdateItem(location, logistic, pincode, formattedTime, t))
                 }
 
                 items.sortBy { it.time }
