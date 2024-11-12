@@ -1,9 +1,10 @@
 package com.cleartrack
 
 data class UpdateItem(
-    val text1: String,
-    val text2: String,
-    val text3: String,
+    val location: String,
+    val logistics: String,
+    val pincode: String,
+    val status : String,
     val text4: String,
     val time: Long
 )

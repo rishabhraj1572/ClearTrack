@@ -34,6 +34,7 @@ class UpdatesActivity : AppCompatActivity() {
 
     private lateinit var showdetails : Button
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
@@ -99,18 +100,35 @@ class UpdatesActivity : AppCompatActivity() {
     }
 
     private fun getStatus(): String {
-        if (items.size > 1) {
-            val lastItem = items[items.size - 1]
-            val secondLastItem = if (items.size > 1) items[items.size - 2] else null
+        if (items.size >= 1) {
+            val lastItemLocation = items[items.size - 1].location
+            val secondLastItemLocation = if (items.size > 1) items[items.size - 2].location else null
+            val lastItemLogistics = items[items.size - 1].logistics
+            val secondLastItemLogistics = if (items.size > 1) items[items.size - 2].logistics else null
+            val lastItemPincode = items[items.size - 1].pincode
+            val secondLastItemPincode = if (items.size > 1) items[items.size - 2].pincode else null
+            val lastItemStatus = items[items.size - 1].status
+            val secondLastItemStatus = if (items.size > 1) items[items.size - 2].status else null
 
-            if (secondLastItem!=null && lastItem == secondLastItem) {
-                return "Dispatched"
-            }else{
+            if (secondLastItemLocation!=null &&
+                secondLastItemLogistics!=null&&
+                secondLastItemPincode!=null&&
+                lastItemLocation==secondLastItemLocation&&
+                lastItemLogistics==secondLastItemLogistics&&
+                lastItemPincode==secondLastItemPincode) {
+
+                if(lastItemStatus == "Dispatched"){
+                    return "Received"
+                }else{
+                    return "Dispatched"
+                }
+
+            } else{
                 return "Received"
             }
         }
 
-        return ""
+        return "Dispatched"
 
     }
 
@@ -122,15 +140,16 @@ class UpdatesActivity : AppCompatActivity() {
             .addOnSuccessListener { task ->
                 items.clear()
                 for (document in task) {
-                    val location = document.get("location").toString()
-                    val logistic = document.get("logistic").toString()
-                    val pincode = document.get("pincode").toString()
-                    val time = document.get("time")
-                    val t = time as Long
+                    val location = "Location : "+ document.get("location").toString()
+                    val logistic = "Logisctics : "+document.get("logistics").toString()
+                    val pincode = "Pin Code : "+document.get("pincode").toString()
+                    val status = "Status : "+document.get("status").toString()
+                    val time : String = document.get("time").toString()
+                    val t : Long= time.toLong()
 
                     val formatter = SimpleDateFormat("hh:mm a, dd-MM-yyyy", Locale.getDefault())
-                    val formattedTime = formatter.format(Date(time))
-                    items.add(UpdateItem(location, logistic, pincode, formattedTime, t))
+                    val formattedTime = "Time : "+formatter.format(Date(t))
+                    items.add(UpdateItem(location, logistic, pincode,status, formattedTime, t))
                 }
 
                 items.sortBy { it.time }

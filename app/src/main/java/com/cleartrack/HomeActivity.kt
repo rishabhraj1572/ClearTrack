@@ -29,13 +29,7 @@ class HomeActivity : AppCompatActivity() {
 
         var logout: Button = findViewById(R.id.logout)
 
-        db.collection("users").document(userid).get().addOnSuccessListener {
-            task ->
-            isLogistic = task.get("is_logistic_partner").toString()
-           // Log.e("islogistic", isLogistic.toString())
-
-
-        }
+        isLogistic = intent.getStringExtra("is_logistic").toString()
 
         logout.setOnClickListener{
             auth.signOut()

@@ -14,6 +14,7 @@ class UpdatesAdapter(private val items: List<UpdateItem>) : RecyclerView.Adapter
         val textView2: TextView = view.findViewById(R.id.timeTextView)
         val textView3: TextView = view.findViewById(R.id.pincodeTextView)
         val textView4: TextView = view.findViewById(R.id.logisticTextView)
+        val textView5 : TextView = view.findViewById(R.id.Status)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -27,10 +28,11 @@ class UpdatesAdapter(private val items: List<UpdateItem>) : RecyclerView.Adapter
         val item = items[position]
 
         // Bind data to the respective TextViews
-        holder.textView1.text = item.text1
-        holder.textView2.text = item.text2
-        holder.textView3.text = item.text3
-        holder.textView4.text = item.text4
+        holder.textView1.text = item.location
+        holder.textView2.text = item.text4
+        holder.textView3.text = item.pincode
+        holder.textView4.text = item.logistics
+        holder.textView5.text = item.status
     }
 
     override fun getItemCount(): Int = items.size
