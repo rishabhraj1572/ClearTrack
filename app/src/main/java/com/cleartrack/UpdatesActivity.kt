@@ -31,21 +31,23 @@ class UpdatesActivity : AppCompatActivity() {
     lateinit var recyclerView: RecyclerView
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var userId: String
+    private var userId: String? = null
 
-    private lateinit var showdetails : Button
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
 
+        auth = FirebaseAuth.getInstance()
         userId = auth.uid.toString()
+
 
         logistic = intent.getStringExtra("isLogistic").toString()
         orderId = intent.getStringExtra("orderId").toString()
 
         recyclerView = findViewById(R.id.recyclerView)
-        showdetails=findViewById<Button>(R.id.showdetails)
         recyclerView.layoutManager = LinearLayoutManager(this)
         showdetails=findViewById<Button>(R.id.showdetails)
 
@@ -67,7 +69,7 @@ class UpdatesActivity : AppCompatActivity() {
 
         updateBtn.setOnClickListener{
 
-            db.collection("users").document(userId).get().addOnSuccessListener {
+            db.collection("users").document(userId!!).get().addOnSuccessListener {
                 value->
                 val location : String = value.get("address").toString()
                 val company : String = value.get("company").toString()
