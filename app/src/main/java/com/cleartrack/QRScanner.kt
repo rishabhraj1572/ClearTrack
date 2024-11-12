@@ -46,6 +46,7 @@ class QRScanner : AppCompatActivity() {
 
         val i : Intent = Intent(this,UpdatesActivity::class.java)
         i.putExtra("isLogistic",logistic)
+        i.putExtra("orderId","$qrContent")
         //startActivity(Intent(this,UpdatesActivity::class.java))
         startActivity(i)
         finish()

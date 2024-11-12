@@ -20,15 +20,20 @@ class UpdatesActivity : AppCompatActivity() {
     val items: ArrayList<UpdateItem> = arrayListOf()
 
     private lateinit var logistic : String
+    private lateinit var orderId : String
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
 
         logistic = intent.getStringExtra("isLogistic").toString()
+        orderId = intent.getStringExtra("orderId").toString()
 
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        showUpdates(orderId)
 
         val updateBtn : Button = findViewById(R.id.update)
 
@@ -39,27 +44,30 @@ class UpdatesActivity : AppCompatActivity() {
         }
 
         updateBtn.setOnClickListener{
-            val orderId="GCvCcyt05XPcOcgceiadWblcLe22_1731254417981"
-            db.collection("orders").document(orderId).collection("updates").get()
-                .addOnSuccessListener{ task ->
 
-                    for (document in task) {
-                        val location = document.get("location").toString()
-                        val logistic = document.get("logistic").toString()
-                        val pincode = document.get("pincode").toString()
-                        val time = document.get("time").toString()
-
-                        Log.e("LOCATION",location)
-
-                        items.add(UpdateItem(location, logistic, pincode, time))
-                    }
-                    val adapter = UpdatesAdapter(items)
-                    recyclerView.adapter = adapter
-                }
 
         }
 
 
 
+    }
+
+    private fun showUpdates(orderId: String) {
+        db.collection("orders").document(orderId).collection("updates").get()
+            .addOnSuccessListener{ task ->
+
+                for (document in task) {
+                    val location = document.get("location").toString()
+                    val logistic = document.get("logistic").toString()
+                    val pincode = document.get("pincode").toString()
+                    val time = document.get("time").toString()
+
+                    Log.e("LOCATION",location)
+
+                    items.add(UpdateItem(location, logistic, pincode, time))
+                }
+                val adapter = UpdatesAdapter(items)
+                recyclerView.adapter = adapter
+            }
     }
 }
