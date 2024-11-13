@@ -34,7 +34,6 @@ class UpdatesActivity : AppCompatActivity() {
 
     private lateinit var showdetails : Button
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update)
@@ -47,6 +46,28 @@ class UpdatesActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         showdetails=findViewById<Button>(R.id.showdetails)
+
+        adapter = UpdatesAdapter(items)
+        adapter.setOnItemClickListener(object : UpdatesAdapter.OnItemClickListener {
+            override fun onItemClick(position: Int) {
+
+                val clickedItem = items[position]
+                val location = clickedItem.location
+                val logisctics = clickedItem.logistics
+                val pincode = clickedItem.pincode
+                val time = clickedItem.text4
+
+                val i = Intent(this@UpdatesActivity,InformationActivity::class.java)
+                i.putExtra("location",location)
+                i.putExtra("logistics",logisctics)
+                i.putExtra("pincode",pincode)
+                i.putExtra("time",time)
+
+                startActivity(i)
+
+            }
+        })
+        recyclerView.adapter = adapter
 
         showUpdates(orderId)
 
@@ -92,10 +113,7 @@ class UpdatesActivity : AppCompatActivity() {
 
             }
 
-
         }
-
-
 
     }
 
@@ -154,8 +172,8 @@ class UpdatesActivity : AppCompatActivity() {
 
                 items.sortBy { it.time }
 
-                adapter = UpdatesAdapter(items)
-                recyclerView.adapter = adapter
+//                adapter = UpdatesAdapter(items)
+//                recyclerView.adapter = adapter
             }
             .addOnFailureListener { e ->
                 Log.e("ERROR", "Failed to fetch updates: ${e.message}")
