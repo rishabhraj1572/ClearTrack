@@ -68,7 +68,7 @@ class UpdatesActivity : AppCompatActivity() {
                 i.putExtra("email",email)
                 i.putExtra("phone",phone)
                 i.putExtra("status",status)
-
+//
 
                 startActivity(i)
 
