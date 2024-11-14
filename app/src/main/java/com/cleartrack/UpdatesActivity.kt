@@ -50,7 +50,7 @@ class UpdatesActivity : AppCompatActivity() {
         adapter = UpdatesAdapter(items)
         adapter.setOnItemClickListener(object : UpdatesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-
+ // :)
                 val clickedItem = items[position]
                 val location = clickedItem.location
                 val logisctics = clickedItem.logistics
