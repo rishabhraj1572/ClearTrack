@@ -2,6 +2,7 @@ package com.cleartrack
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -130,12 +131,21 @@ class SignupActivity : AppCompatActivity() {
         val pincodeInput = EditText(this)
         pincodeInput.hint = "Pincode"
 
+        val emailInput = EditText(this)
+        emailInput.hint = "Email"
+        emailInput.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        val phoneInput = EditText(this)
+        phoneInput.hint = "Phone Number"
+        phoneInput.inputType = InputType.TYPE_CLASS_PHONE
+
         // LinearLayout for edit text
         val layout = LinearLayout(this)
         layout.orientation = LinearLayout.VERTICAL
         layout.addView(companyNameInput)
         layout.addView(locationInput)
         layout.addView(pincodeInput)
+        layout.addView(emailInput)
+        layout.addView(phoneInput)
 
         builder.setView(layout)
 
@@ -143,6 +153,8 @@ class SignupActivity : AppCompatActivity() {
             val companyName = companyNameInput.text.toString()
             val location = locationInput.text.toString()
             val pincode = pincodeInput.text.toString()
+            val email = emailInput.text.toString()
+            val phone = phoneInput.text.toString()
             if (companyName.isNotEmpty() && location.isNotEmpty() && pincode.isNotEmpty()) {
                 // Store the details or process them as needed
                 // Proceed to the QR generation activity
@@ -151,6 +163,8 @@ class SignupActivity : AppCompatActivity() {
                     "address" to location,
                     "company" to companyName,
                     "pincode" to pincode,
+                    "email" to email,
+                    "phone" to phone,
                     "is_logistic_partner" to true
                 )
 

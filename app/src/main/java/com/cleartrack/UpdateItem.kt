@@ -6,6 +6,8 @@ data class UpdateItem(
     val pincode: String,
     val status : String,
     val text4: String,
-    val time: Long
+    val time: Long,
+    val phone : String,
+    val email : String
 )
 

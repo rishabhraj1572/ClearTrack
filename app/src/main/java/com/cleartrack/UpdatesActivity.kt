@@ -56,12 +56,16 @@ class UpdatesActivity : AppCompatActivity() {
                 val logisctics = clickedItem.logistics
                 val pincode = clickedItem.pincode
                 val time = clickedItem.text4
+                val email = clickedItem.email
+                val phone = clickedItem.phone
 
                 val i = Intent(this@UpdatesActivity,InformationActivity::class.java)
                 i.putExtra("location",location)
                 i.putExtra("logistics",logisctics)
                 i.putExtra("pincode",pincode)
                 i.putExtra("time",time)
+                i.putExtra("email",email)
+                i.putExtra("phone",phone)
 
                 startActivity(i)
 
@@ -93,13 +97,18 @@ class UpdatesActivity : AppCompatActivity() {
                 val company : String = value.get("company").toString()
                 val pincode : String = value.get("pincode").toString()
 
+
                 val currentTime = System.currentTimeMillis().toString()
+                val email : String=value.get("email").toString()
+                val phonenumber : String=value.get("phone").toString()
 
                 val updateValues = mapOf(
                     "location" to location,
                     "logistics" to company,
                     "pincode" to pincode,
                     "time" to currentTime,
+                    "email" to email,
+                    "phone" to phonenumber,
                     "status" to getStatus()
                 )
 
@@ -163,11 +172,14 @@ class UpdatesActivity : AppCompatActivity() {
                     val pincode = "Pin Code : "+document.get("pincode").toString()
                     val status = "Status : "+document.get("status").toString()
                     val time : String = document.get("time").toString()
+                    val email : String = document.get("email").toString()
+                    val phonenumber : String = document.get("phone").toString()
+
                     val t : Long= time.toLong()
 
                     val formatter = SimpleDateFormat("hh:mm a, dd-MM-yyyy", Locale.getDefault())
                     val formattedTime = "Time : "+formatter.format(Date(t))
-                    items.add(UpdateItem(location, logistic, pincode,status, formattedTime, t))
+                    items.add(UpdateItem(location, logistic, pincode,status, formattedTime, t, phonenumber,email))
                 }
 
                 items.sortBy { it.time }

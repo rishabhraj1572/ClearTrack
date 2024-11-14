@@ -32,13 +32,16 @@ class InformationActivity : AppCompatActivity() {
         val logistics = intent.getStringExtra("logistics")
         val pincode = intent.getStringExtra("pincode")
         val time = intent.getStringExtra("time")
+        val phone = intent.getStringExtra("phone")
+        val email = intent.getStringExtra("email")
+
 
         logisticTextView.text = logistics ?: "N/A"
         locationTextView.text = location ?: "N/A"
         pincodeTextView.text = pincode ?: "N/A"
         timeTextView.text = time ?: "N/A"
-        emailTextView.text = "null"  //for now  :)
-        phoneTextView.text = "null"
+        emailTextView.text = email  //for now  :)
+        phoneTextView.text = phone   // ;) hogya :) ;) :)
 
 
 
