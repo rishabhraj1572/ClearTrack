@@ -1,14 +1,17 @@
 package com.cleartrack
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -40,7 +43,11 @@ class CreateOrderActivity : AppCompatActivity() {
     private lateinit var goodsAttStatus: TextView
     private lateinit var submitBtn: Button
 
+    private lateinit var progressBar: ProgressBar
+
     private var currentStatusTextView: TextView? = null
+
+    private lateinit var progressbar : ProgressDialog
 
 
 
@@ -74,11 +81,16 @@ class CreateOrderActivity : AppCompatActivity() {
         expDocButton = findViewById(R.id.exp_doc)
         impDocButton = findViewById(R.id.imp_doc)
         goodsDocButton = findViewById(R.id.goods_doc)
+        //progressBar = findViewById(R.id.progressBar)
+
         submitBtn = findViewById(R.id.submiBtn)
 
         expAttStatus = findViewById(R.id.exp_att_status)
         impAttStatus = findViewById(R.id.imp_att_status)
         goodsAttStatus = findViewById(R.id.goods_att_status)
+        progressbar = ProgressDialog(this)
+        progressbar.setTitle("Loading...")
+        progressbar.setCancelable(false)
 
 
         //edit text items
@@ -117,6 +129,8 @@ class CreateOrderActivity : AppCompatActivity() {
 
         //submitBtn
         submitBtn.setOnClickListener{
+
+            progressbar.show()
 
             //getting Strings
             val name : String = etName.text.toString()
@@ -271,6 +285,8 @@ class CreateOrderActivity : AppCompatActivity() {
 
                     //all tasks done now create qr code with data as {orderID} and move to next activity
                     if(!allDone){
+//                        progressBar.visibility = View.GONE
+                        progressbar.dismiss()
                         val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
                         intent.putExtra("orderId",orderID)
                         startActivity(intent)
@@ -281,6 +297,7 @@ class CreateOrderActivity : AppCompatActivity() {
 
                 }
                 .addOnFailureListener { e ->
+                    progressbar.dismiss()
                     Toast.makeText(this, "Failed to upload file $doc_name", Toast.LENGTH_SHORT).show()
                 }
         }
