@@ -29,7 +29,6 @@ class InformationActivity : AppCompatActivity() {
         phoneTextView=findViewById<TextView>(R.id.phoneTextView)
         statusTextView=findViewById<TextView>(R.id.statusTextView)
 
-
         val location = intent.getStringExtra("location")
         val logistics = intent.getStringExtra("logistics")
         val pincode = intent.getStringExtra("pincode")
@@ -46,11 +45,6 @@ class InformationActivity : AppCompatActivity() {
         statusTextView.text = status ?:"N/A"
         emailTextView.text = email ?:"N/A" //for now  :)
         phoneTextView.text = phone ?:"N/A"  // ;) hogya :) ;) :)
-
-
-
-
-
 
     }
 
