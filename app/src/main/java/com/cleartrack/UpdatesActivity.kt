@@ -58,6 +58,7 @@ class UpdatesActivity : AppCompatActivity() {
                 val time = clickedItem.text4
                 val email = clickedItem.email
                 val phone = clickedItem.phone
+                val status = clickedItem.status
 
                 val i = Intent(this@UpdatesActivity,InformationActivity::class.java)
                 i.putExtra("location",location)
@@ -66,6 +67,8 @@ class UpdatesActivity : AppCompatActivity() {
                 i.putExtra("time",time)
                 i.putExtra("email",email)
                 i.putExtra("phone",phone)
+                i.putExtra("status",status)
+
 
                 startActivity(i)
 
@@ -184,8 +187,9 @@ class UpdatesActivity : AppCompatActivity() {
 
                 items.sortBy { it.time }
 
-//                adapter = UpdatesAdapter(items)
-//                recyclerView.adapter = adapter
+               // adapter = UpdatesAdapter(items)
+                adapter.notifyDataSetChanged()
+                //recyclerView.adapter = adapter
             }
             .addOnFailureListener { e ->
                 Log.e("ERROR", "Failed to fetch updates: ${e.message}")

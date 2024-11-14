@@ -13,6 +13,7 @@ class InformationActivity : AppCompatActivity() {
     private lateinit var timeTextView : TextView
     private lateinit var emailTextView : TextView
     private lateinit var phoneTextView : TextView
+    private lateinit var statusTextView : TextView
 
 
 
@@ -26,6 +27,7 @@ class InformationActivity : AppCompatActivity() {
         timeTextView=findViewById<TextView>(R.id.timeTextView)
         emailTextView=findViewById<TextView>(R.id.emailTextView)
         phoneTextView=findViewById<TextView>(R.id.phoneTextView)
+        statusTextView=findViewById<TextView>(R.id.statusTextView)
 
 
         val location = intent.getStringExtra("location")
@@ -34,14 +36,16 @@ class InformationActivity : AppCompatActivity() {
         val time = intent.getStringExtra("time")
         val phone = intent.getStringExtra("phone")
         val email = intent.getStringExtra("email")
+        val status = intent.getStringExtra("status")
 
 
         logisticTextView.text = logistics ?: "N/A"
         locationTextView.text = location ?: "N/A"
         pincodeTextView.text = pincode ?: "N/A"
         timeTextView.text = time ?: "N/A"
-        emailTextView.text = email  //for now  :)
-        phoneTextView.text = phone   // ;) hogya :) ;) :)
+        statusTextView.text = status ?:"N/A"
+        emailTextView.text = email ?:"N/A" //for now  :)
+        phoneTextView.text = phone ?:"N/A"  // ;) hogya :) ;) :)
 
 
 
