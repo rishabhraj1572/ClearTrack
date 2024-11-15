@@ -163,7 +163,8 @@ class CreateOrderActivity : AppCompatActivity() {
                 "importer_name" to impName,
                 "importer_number" to impPh,
                 "product_description" to productDesc,
-                "is_active" to true
+                "is_active" to true,
+                "order_id" to orderID
             )       //urls will be mapped within uploadDocs function
 
             db.collection("orders").document("${orderID}").set(details)

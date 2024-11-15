@@ -59,6 +59,12 @@
         <activity
             android:name=".InformationActivity"
             android:exported="true"/>
+        <activity
+            android:name=".MyOrderInformationActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".MyOrdersActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

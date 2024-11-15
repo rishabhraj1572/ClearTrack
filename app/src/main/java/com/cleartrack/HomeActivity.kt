@@ -43,6 +43,12 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this,CreateOrderActivity::class.java))
         }
 
+        var myOrder: Button = findViewById(R.id.myOrders)
+
+        myOrder.setOnClickListener{
+            startActivity(Intent(this,MyOrdersActivity::class.java))
+        }
+
 
 
 
