@@ -121,7 +121,6 @@ class QRGenerateActivity : AppCompatActivity() {
         return imageUri
     }
 
-
     private fun shareQRCode(bitmap: Bitmap) {
         val uri = saveQRCode(bitmap) ?: return
         val shareIntent = Intent().apply {

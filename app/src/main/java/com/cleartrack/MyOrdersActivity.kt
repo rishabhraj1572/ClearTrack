@@ -38,10 +38,13 @@ class MyOrdersActivity : AppCompatActivity() {
                 val clickedItem = items[position]
                 val orderId = clickedItem.orderId
                 val status = clickedItem.status
+                val qr_url = clickedItem.qr_url
 
                 val i = Intent(this@MyOrdersActivity,MyOrderInformationActivity::class.java)
-                i.putExtra("location",orderId)
+                i.putExtra("orderId",orderId)
                 i.putExtra("status",status)
+                i.putExtra("qr_url",qr_url)
+
                 startActivity(i)
 
             }
@@ -66,7 +69,10 @@ class MyOrdersActivity : AppCompatActivity() {
                         val time = orderId.split("_")[1]
                         val t : Long = time.toLong()
                         val status = "Pending"
-                        items.add(MyOrderItem(orderId, status, t))
+
+                        val qr_url = document.get("qr_url").toString()
+
+                        items.add(MyOrderItem(orderId, status, t, qr_url))
 
                     }
 
