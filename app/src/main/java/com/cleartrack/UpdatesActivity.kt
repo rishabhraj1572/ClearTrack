@@ -105,23 +105,28 @@ class UpdatesActivity : AppCompatActivity() {
                 val email : String=value.get("email").toString()
                 val phonenumber : String=value.get("phone").toString()
 
-                val updateValues = mapOf(
-                    "location" to location,
-                    "logistics" to company,
-                    "pincode" to pincode,
-                    "time" to currentTime,
-                    "email" to email,
-                    "phone" to phonenumber,
-                    "status" to getStatus()
-                )
 
-                db.collection("orders").document(orderId).collection("updates")
-                    .document(currentTime).set(updateValues).addOnSuccessListener {
+                getStatus(pincode) { status ->
+                    val updateValues = mapOf(
+                        "location" to location,
+                        "logistics" to company,
+                        "pincode" to pincode,
+                        "time" to currentTime,
+                        "email" to email,
+                        "phone" to phonenumber,
+                        "status" to status
+                    )
 
-                        items.clear()
-                        adapter.notifyDataSetChanged()
-                        showUpdates(orderId)
-                    }
+                    db.collection("orders").document(orderId).collection("updates")
+                        .document(currentTime).set(updateValues).addOnSuccessListener {
+
+                            items.clear()
+                            adapter.notifyDataSetChanged()
+                            showUpdates(orderId)
+                        }
+                }
+
+
 
             }
 
@@ -129,37 +134,46 @@ class UpdatesActivity : AppCompatActivity() {
 
     }
 
-    private fun getStatus(): String {
-        if (items.size >= 1) {
-            val lastItemLocation = items[items.size - 1].location
+    private fun getStatus(pincode: String, callback: (String) -> Unit) {
+        if (items.isNotEmpty()) {
+            val lastItemLocation = items.last().location
             val secondLastItemLocation = if (items.size > 1) items[items.size - 2].location else null
-            val lastItemLogistics = items[items.size - 1].logistics
+            val lastItemLogistics = items.last().logistics
             val secondLastItemLogistics = if (items.size > 1) items[items.size - 2].logistics else null
-            val lastItemPincode = items[items.size - 1].pincode
+            val lastItemPincode = items.last().pincode
             val secondLastItemPincode = if (items.size > 1) items[items.size - 2].pincode else null
-            val lastItemStatus = items[items.size - 1].status
-            val secondLastItemStatus = if (items.size > 1) items[items.size - 2].status else null
+            val lastItemStatus = items.last().status
 
-            if (secondLastItemLocation!=null &&
-                secondLastItemLogistics!=null&&
-                secondLastItemPincode!=null&&
-                lastItemLocation==secondLastItemLocation&&
-                lastItemLogistics==secondLastItemLogistics&&
-                lastItemPincode==secondLastItemPincode) {
-
-                if(lastItemStatus == "Dispatched"){
-                    return "Received"
-                }else{
-                    return "Dispatched"
+            // Retrieve the destination pincode asynchronously
+            db.collection("orders").document(orderId).get().addOnSuccessListener { task ->
+                val destinationPincode = task.getString("pincode")
+                if (destinationPincode == pincode) {
+                    callback("Completed")
+                    return@addOnSuccessListener
                 }
 
-            } else{
-                return "Received"
+                val status = if (
+                    secondLastItemLocation != null &&
+                    secondLastItemLogistics != null &&
+                    secondLastItemPincode != null &&
+                    lastItemLocation == secondLastItemLocation &&
+                    lastItemLogistics == secondLastItemLogistics &&
+                    lastItemPincode == secondLastItemPincode
+                ) {
+                    if (lastItemStatus == "Dispatched") {
+                        "Received"
+                    } else {
+                        "Dispatched"
+                    }
+                } else {
+                    "Received"
+                }
+
+                callback(status)
             }
+        } else {
+            callback("Dispatched")
         }
-
-        return "Dispatched"
-
     }
 
     private fun showUpdates(orderId: String) {

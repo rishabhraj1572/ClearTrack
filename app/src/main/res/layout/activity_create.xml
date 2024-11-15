@@ -131,6 +131,22 @@
                 app:layout_constraintTop_toBottomOf="@+id/email" />
 
             <EditText
+                android:id="@+id/pincode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:hint="Pincode"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/edittext_bg_outline"
+                android:padding="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/exp_address" />
+
+            <EditText
                 android:id="@+id/imp_address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -144,7 +160,7 @@
                 android:padding="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/exp_address" />
+                app:layout_constraintTop_toBottomOf="@+id/pincode" />
 
             <EditText
                 android:id="@+id/imp_name"

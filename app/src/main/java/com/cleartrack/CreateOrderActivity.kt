@@ -102,6 +102,7 @@ class CreateOrderActivity : AppCompatActivity() {
         val etImpName : EditText = findViewById(R.id.imp_name)
         val etImpPh : EditText = findViewById(R.id.imp_phone)
         val etProductDesc : EditText = findViewById(R.id.product_desc)
+        val etPincode : EditText = findViewById(R.id.pincode)
 
 
 
@@ -141,6 +142,7 @@ class CreateOrderActivity : AppCompatActivity() {
             val impName : String = etImpName.text.toString()
             val impPh : String = etImpPh.text.toString()
             val productDesc : String = etProductDesc.text.toString()
+            val pinCode : String = etPincode.text.toString()
 
             //uploading all attached files
             if(imgUri == null || expDocUri==null||impDocUri==null||goodsDocUri==null){
@@ -164,7 +166,8 @@ class CreateOrderActivity : AppCompatActivity() {
                 "importer_number" to impPh,
                 "product_description" to productDesc,
                 "is_active" to true,
-                "order_id" to orderID
+                "order_id" to orderID,
+                "pincode" to pinCode
             )       //urls will be mapped within uploadDocs function
 
             db.collection("orders").document("${orderID}").set(details)
