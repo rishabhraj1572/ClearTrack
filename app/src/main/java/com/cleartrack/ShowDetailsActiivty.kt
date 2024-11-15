@@ -2,6 +2,7 @@ package com.cleartrack
 
 import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -63,6 +64,7 @@ class ShowDetailsActiivty : AppCompatActivity() {
                     val docUrl = documentSnapshot.getString(docName)
                     if (docUrl != null) {
                         downloadPdf(docUrl, "$docName.pdf")
+                        openInBrowser(docUrl)
                     } else {
                         Toast.makeText(this, "Document URL not found", Toast.LENGTH_SHORT).show()
                     }
@@ -73,6 +75,15 @@ class ShowDetailsActiivty : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Failed to fetch document: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun openInBrowser(url: String) {
+        try {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(browserIntent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Could not open browser: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
     private fun downloadPdf(url: String, fileName: String) {
         val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
