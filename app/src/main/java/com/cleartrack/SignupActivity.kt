@@ -1,5 +1,6 @@
 package com.cleartrack
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
@@ -20,6 +21,8 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     val db = Firebase.firestore
 
+    private lateinit var progressbar : ProgressDialog
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +36,11 @@ class SignupActivity : AppCompatActivity() {
         val passwordEditText: EditText = findViewById(R.id.passwordEditText)
         val cnfPassEditText: EditText = findViewById(R.id.cnfPassEditText)
         val signupButton: Button = findViewById(R.id.signUpBtn)
+
+        progressbar = ProgressDialog(this).apply {
+            setMessage("Signing  in...")
+            setCancelable(false)
+        }
 
         val back : Button = findViewById(R.id.back)
 
@@ -58,6 +66,7 @@ class SignupActivity : AppCompatActivity() {
             }
 
             // Register user
+            progressbar.show()
             registerUser(email, password)
         }
     }
@@ -168,12 +177,17 @@ class SignupActivity : AppCompatActivity() {
                     "is_logistic_partner" to true
                 )
 
+                progressbar.setMessage("Saving details...")
+                progressbar.show()
+
                 userId?.let {
                     db.collection("users").document(it).update(updateDetails)
                         .addOnSuccessListener { documentReference ->
                             proceedToNextStep()
+                            progressbar.dismiss()
                         }
                         .addOnFailureListener { e ->
+                            progressbar.dismiss()
                         }
                 }
 
