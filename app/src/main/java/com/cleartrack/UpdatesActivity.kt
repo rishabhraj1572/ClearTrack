@@ -136,45 +136,39 @@ class UpdatesActivity : AppCompatActivity() {
 
     private fun getStatus(pincode: String, callback: (String) -> Unit) {
         if (items.isNotEmpty()) {
-            val lastItemLocation = items.last().location
-            val secondLastItemLocation = if (items.size > 1) items[items.size - 2].location else null
-            val lastItemLogistics = items.last().logistics
-            val secondLastItemLogistics = if (items.size > 1) items[items.size - 2].logistics else null
-            val lastItemPincode = items.last().pincode
-            val secondLastItemPincode = if (items.size > 1) items[items.size - 2].pincode else null
-            val lastItemStatus = items.last().status
-
-            // Retrieve the destination pincode asynchronously
+            // Fetch the order's destination pincode
             db.collection("orders").document(orderId).get().addOnSuccessListener { task ->
                 val destinationPincode = task.getString("pincode")
+
+                // Check if the current pincode matches the destination
                 if (destinationPincode == pincode) {
                     callback("Completed")
                     return@addOnSuccessListener
                 }
 
-                val status = if (
-                    secondLastItemLocation != null &&
-                    secondLastItemLogistics != null &&
-                    secondLastItemPincode != null &&
-                    lastItemLocation == secondLastItemLocation &&
-                    lastItemLogistics == secondLastItemLogistics &&
-                    lastItemPincode == secondLastItemPincode
-                ) {
-                    if (lastItemStatus == "Dispatched") {
-                        "Received"
-                    } else {
-                        "Dispatched"
+                // Retrieve details of the last item
+                val lastItem = items.last()
+                val secondLastItem = if (items.size > 1) items[items.size - 2] else null
+
+                // Logic for updating the status based on the last and second-last items
+                val status = when {
+                    secondLastItem != null &&
+                            lastItem.location == secondLastItem.location &&
+                            lastItem.logistics == secondLastItem.logistics &&
+                            lastItem.pincode == secondLastItem.pincode -> {
+                        if (lastItem.status == "Dispatched") "Received" else "Dispatched"
                     }
-                } else {
-                    "Received"
+                    else -> "Received"
                 }
 
                 callback(status)
             }
         } else {
+            // Default status if there are no previous updates
             callback("Dispatched")
         }
     }
+
 
     private fun showUpdates(orderId: String) {
         db.collection("orders")
