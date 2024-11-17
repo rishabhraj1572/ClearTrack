@@ -141,6 +141,15 @@ class UpdatesActivity : AppCompatActivity() {
 
                 // Check if the current pincode matches the destination
                 if (destinationPincode == pincode) {
+                    // If completed, update `is_active` to false in Firestore
+                    db.collection("orders").document(orderId).update("is_active", false)
+                        .addOnSuccessListener {
+                            Log.d("OrderStatus", "is_active set to false for orderId: $orderId")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("OrderStatus", "Failed to update is_active for orderId: $orderId", e)
+                        }
+
                     callback("Completed")
                     return@addOnSuccessListener
                 }
@@ -167,6 +176,7 @@ class UpdatesActivity : AppCompatActivity() {
             callback("Received")
         }
     }
+
 
 
     private fun showUpdates(orderId: String) {

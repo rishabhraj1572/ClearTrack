@@ -68,11 +68,14 @@ class MyOrdersActivity : AppCompatActivity() {
 
                         val time = orderId.split("_")[1]
                         val t : Long = time.toLong()
-                        val status = "Pending"
-
+                        val orderStatus = if (document.getBoolean("is_active") == true) {
+                            "Pending"
+                        } else {
+                            "Completed"
+                        }
                         val qr_url = document.get("qr_url").toString()
 
-                        items.add(MyOrderItem(orderId, status, t, qr_url))
+                        items.add(MyOrderItem(orderId, orderStatus, t, qr_url))
 
                     }
 
