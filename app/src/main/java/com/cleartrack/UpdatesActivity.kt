@@ -1,10 +1,13 @@
 package com.cleartrack
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -33,7 +36,13 @@ class UpdatesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var userId: String
 
+    private lateinit var progressBar: ProgressDialog
+
     private lateinit var showdetails : Button
+
+    private lateinit var orderIdView: TextView
+
+    private lateinit var noItemsText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +50,16 @@ class UpdatesActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         userId = auth.uid.toString()
 
+        noItemsText = findViewById(R.id.noItems)
+
+        progressBar = ProgressDialog(this)
+        progressBar.setTitle("Loading...")
+
         logistic = intent.getStringExtra("isLogistic").toString()
         orderId = intent.getStringExtra("orderId").toString()
+
+        orderIdView= findViewById(R.id.orderId)
+        orderIdView.text = "Order ID : "+ orderId
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -94,6 +111,8 @@ class UpdatesActivity : AppCompatActivity() {
         }
 
         updateBtn.setOnClickListener{
+
+            progressBar.show()
 
             db.collection("users").document(userId).get().addOnSuccessListener {
                 value->
@@ -164,12 +183,15 @@ class UpdatesActivity : AppCompatActivity() {
             }
         } else {
             // Default status if there are no previous updates
-            callback("Received")
+            callback("Dispatched")
         }
     }
 
 
     private fun showUpdates(orderId: String) {
+
+        checkItems()
+
         db.collection("orders")
             .document(orderId)
             .collection("updates")
@@ -180,6 +202,7 @@ class UpdatesActivity : AppCompatActivity() {
                 }
 
                 if (snapshot != null) {
+                    progressBar.dismiss()
                     for (change in snapshot.documentChanges) {
                         when (change.type) {
                             DocumentChange.Type.ADDED -> {
@@ -199,6 +222,7 @@ class UpdatesActivity : AppCompatActivity() {
                                 val newItem = UpdateItem(document.id,location, logistic, pincode, status, formattedTime, t, phoneNumber, email)
                                 items.add(newItem)
                                 adapter.notifyItemInserted(items.size - 1)
+                                checkItems()
                             }
                             DocumentChange.Type.MODIFIED -> {
                                 val document = change.document
@@ -215,6 +239,7 @@ class UpdatesActivity : AppCompatActivity() {
 
                                     // Update other fields
                                     adapter.notifyItemChanged(updatedItemIndex)
+                                    checkItems()
                                 }
                             }
                             DocumentChange.Type.REMOVED -> {
@@ -223,6 +248,7 @@ class UpdatesActivity : AppCompatActivity() {
                                     items.removeAt(removedItemIndex)
                                     adapter.notifyItemRemoved(removedItemIndex)
                                     adapter.notifyDataSetChanged() // Force refresh
+                                    checkItems()
                                 }
                             }
                         }
@@ -231,7 +257,17 @@ class UpdatesActivity : AppCompatActivity() {
                     items.sortBy { it.time }
                 }
             }
+
     }
 
+
+    private fun checkItems(){
+        if(items.isEmpty()){
+            progressBar.dismiss()
+            noItemsText.visibility = View.VISIBLE
+        }else{
+            noItemsText.visibility = View.GONE
+        }
+    }
 
 }

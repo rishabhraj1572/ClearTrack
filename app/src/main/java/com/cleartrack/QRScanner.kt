@@ -30,6 +30,11 @@ class QRScanner : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
 
     private fun getResult(result: QRResult) {
         qrContent = when (result) {
@@ -44,14 +49,16 @@ class QRScanner : AppCompatActivity() {
 
         Log.d("QR RESULT", "QR content: $qrContent")
 
-        val i : Intent = Intent(this,UpdatesActivity::class.java)
-        i.putExtra("isLogistic",logistic)
-        i.putExtra("orderId","$qrContent")
-        //startActivity(Intent(this,UpdatesActivity::class.java))
-        startActivity(i)
-        finish()
-
-
+        if(qrContent=="User canceled" || qrContent == "Missing permission"){
+            finish()
+        }else{
+            val i : Intent = Intent(this,UpdatesActivity::class.java)
+            i.putExtra("isLogistic",logistic)
+            i.putExtra("orderId","$qrContent")
+            //startActivity(Intent(this,UpdatesActivity::class.java))
+            startActivity(i)
+            finish()
+        }
 
 //        Toast.makeText(this, qrContent ?: "No content found", Toast.LENGTH_SHORT).show()
     }
