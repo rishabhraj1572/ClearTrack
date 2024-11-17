@@ -1,13 +1,14 @@
 package com.cleartrack
 
 data class UpdateItem(
-    val location: String,
-    val logistics: String,
-    val pincode: String,
-    val status : String,
-    val text4: String,
-    val time: Long,
-    val phone : String,
-    val email : String
+    var documentId: String,
+    var location: String,
+    var logistics: String,
+    var pincode: String,
+    var status : String,
+    var text4: String,
+    var time: Long,
+    var phone : String,
+    var email : String
 )
 

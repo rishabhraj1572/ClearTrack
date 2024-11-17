@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.firestore
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -120,13 +121,11 @@ class UpdatesActivity : AppCompatActivity() {
                     db.collection("orders").document(orderId).collection("updates")
                         .document(currentTime).set(updateValues).addOnSuccessListener {
 
-                            items.clear()
+//                            items.clear()
                             adapter.notifyDataSetChanged()
-                            showUpdates(orderId)
+//                            showUpdates(orderId)
                         }
                 }
-
-
 
             }
 
@@ -165,7 +164,7 @@ class UpdatesActivity : AppCompatActivity() {
             }
         } else {
             // Default status if there are no previous updates
-            callback("Dispatched")
+            callback("Received")
         }
     }
 
@@ -174,34 +173,65 @@ class UpdatesActivity : AppCompatActivity() {
         db.collection("orders")
             .document(orderId)
             .collection("updates")
-            .get()
-            .addOnSuccessListener { task ->
-                items.clear()
-                for (document in task) {
-                    val location = "Location : "+ document.get("location").toString()
-                    val logistic = "Logisctics : "+document.get("logistics").toString()
-                    val pincode = "Pin Code : "+document.get("pincode").toString()
-                    val status = "Status : "+document.get("status").toString()
-                    val time : String = document.get("time").toString()
-                    val email : String = document.get("email").toString()
-                    val phonenumber : String = document.get("phone").toString()
-
-                    val t : Long= time.toLong()
-
-                    val formatter = SimpleDateFormat("hh:mm a, dd-MM-yyyy", Locale.getDefault())
-                    val formattedTime = "Time : "+formatter.format(Date(t))
-                    items.add(UpdateItem(location, logistic, pincode,status, formattedTime, t, phonenumber,email))
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.e("ERROR", "Failed to fetch updates: ${e.message}")
+                    return@addSnapshotListener
                 }
 
-                items.sortBy { it.time }
+                if (snapshot != null) {
+                    for (change in snapshot.documentChanges) {
+                        when (change.type) {
+                            DocumentChange.Type.ADDED -> {
+                                val document = change.document
+                                val location = "Location : " + document.getString("location").orEmpty()
+                                val logistic = "Logistics : " + document.getString("logistics").orEmpty()
+                                val pincode = "Pin Code : " + document.getString("pincode").orEmpty()
+                                val status = "Status : " + document.getString("status").orEmpty()
+                                val time = document.getString("time").orEmpty()
+                                val email = document.getString("email").orEmpty()
+                                val phoneNumber = document.getString("phone").orEmpty()
 
-               // adapter = UpdatesAdapter(items)
-                adapter.notifyDataSetChanged()
-                //recyclerView.adapter = adapter
-            }
-            .addOnFailureListener { e ->
-                Log.e("ERROR", "Failed to fetch updates: ${e.message}")
+                                val t: Long = time.toLongOrNull() ?: 0L
+                                val formatter = SimpleDateFormat("hh:mm a, dd-MM-yyyy", Locale.getDefault())
+                                val formattedTime = "Time : " + formatter.format(Date(t))
+
+                                val newItem = UpdateItem(document.id,location, logistic, pincode, status, formattedTime, t, phoneNumber, email)
+                                items.add(newItem)
+                                adapter.notifyItemInserted(items.size - 1)
+                            }
+                            DocumentChange.Type.MODIFIED -> {
+                                val document = change.document
+                                val updatedItemIndex = items.indexOfFirst { it.documentId == document.id } // Use unique ID
+                                if (updatedItemIndex != -1) {
+                                    val updatedItem = items[updatedItemIndex]
+                                    updatedItem.location = "Location : " + document.getString("location").orEmpty()
+                                    updatedItem.logistics = "Logistics : " + document.getString("logistics").orEmpty()
+                                    updatedItem.pincode = "Pin Code : " + document.getString("pincode").orEmpty()
+                                    updatedItem.status = "Status : " + document.getString("status").orEmpty()
+                                    updatedItem.time = document.getString("time").orEmpty().toLong()
+                                    updatedItem.email=document.getString("email").orEmpty()
+                                    updatedItem.phone=document.getString("phone").orEmpty()
+
+                                    // Update other fields
+                                    adapter.notifyItemChanged(updatedItemIndex)
+                                }
+                            }
+                            DocumentChange.Type.REMOVED -> {
+                                val removedItemIndex = items.indexOfFirst { it.documentId == change.document.id } // Use unique ID
+                                if (removedItemIndex != -1) {
+                                    items.removeAt(removedItemIndex)
+                                    adapter.notifyItemRemoved(removedItemIndex)
+                                    adapter.notifyDataSetChanged() // Force refresh
+                                }
+                            }
+                        }
+                    }
+
+                    items.sortBy { it.time }
+                }
             }
     }
+
 
 }
