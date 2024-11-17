@@ -1,5 +1,6 @@
 package com.cleartrack
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +37,12 @@ class MyOrderAdapter(
 
         holder.textView1.text = item.orderId
         holder.textView2.text = item.status
+
+        if (item.status == "Completed") {
+            holder.textView2.setTextColor(Color.GREEN)
+        } else {
+            holder.textView2.setTextColor(Color.RED)
+        }
 
         // Set click listener on the entire item view
         holder.itemView.setOnClickListener {
