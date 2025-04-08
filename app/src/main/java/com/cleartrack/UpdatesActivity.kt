@@ -96,13 +96,20 @@ class UpdatesActivity : AppCompatActivity() {
 
         showUpdates(orderId)
 
-        val updateBtn : Button = findViewById(R.id.update)
+        val updateBtn: Button = findViewById(R.id.update)
+        updateBtn.visibility = View.GONE
 
-        if(logistic=="true") {
-            updateBtn.visibility = View.VISIBLE
-        } else {
-            updateBtn.visibility=View.GONE
-        }
+        db.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                val isLogisticPartner = document.getBoolean("is_logistic_partner") ?: false
+                if (isLogisticPartner) {
+                    updateBtn.visibility = View.VISIBLE
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Firestore", "Failed to fetch user role: ${exception.message}")
+            }
+
 
         showdetails.setOnClickListener {
             val intent = Intent(this, ShowDetailsActiivty::class.java)
@@ -126,7 +133,7 @@ class UpdatesActivity : AppCompatActivity() {
                 val phonenumber : String=value.get("phone").toString()
 
 
-                getStatus(pincode) { status ->
+                getStatus(pincode, location, company) { status ->
                     val updateValues = mapOf(
                         "location" to location,
                         "logistics" to company,
@@ -136,6 +143,7 @@ class UpdatesActivity : AppCompatActivity() {
                         "phone" to phonenumber,
                         "status" to status
                     )
+
 
                     db.collection("orders").document(orderId).collection("updates")
                         .document(currentTime).set(updateValues).addOnSuccessListener {
@@ -152,49 +160,50 @@ class UpdatesActivity : AppCompatActivity() {
 
     }
 
-    private fun getStatus(pincode: String, callback: (String) -> Unit) {
-        if (items.isNotEmpty()) {
-            // Fetch the order's destination pincode
-            db.collection("orders").document(orderId).get().addOnSuccessListener { task ->
-                val destinationPincode = task.getString("pincode")
+    private fun getStatus(pincode: String, location: String, company: String, callback: (String) -> Unit) {
 
-                // Check if the current pincode matches the destination
-                if (destinationPincode == pincode) {
-                    // If completed, update `is_active` to false in Firestore
-                    db.collection("orders").document(orderId).update("is_active", false)
-                        .addOnSuccessListener {
-                            Log.d("OrderStatus", "is_active set to false for orderId: $orderId")
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("OrderStatus", "Failed to update is_active for orderId: $orderId", e)
-                        }
+        db.collection("orders").document(orderId).get().addOnSuccessListener { task ->
+            val destinationPincode = task.getString("pincode")
 
-                    callback("Completed")
-                    return@addOnSuccessListener
-                }
 
-                // Retrieve details of the last item
-                val lastItem = items.last()
-                val secondLastItem = if (items.size > 1) items[items.size - 2] else null
+            if (destinationPincode == pincode) {
 
-                // Logic for updating the status based on the last and second-last items
-                val status = when {
-                    secondLastItem != null &&
-                            lastItem.location == secondLastItem.location &&
-                            lastItem.logistics == secondLastItem.logistics &&
-                            lastItem.pincode == secondLastItem.pincode -> {
-                        if (lastItem.status == "Dispatched") "Received" else "Dispatched"
+                db.collection("orders").document(orderId)
+                    .update("is_active", false)
+                    .addOnSuccessListener {
+                        Log.d("OrderStatus", "Marked as completed")
                     }
-                    else -> "Received"
-                }
 
-                callback(status)
+                callback("Completed")  // Mark status as completed
+                return@addOnSuccessListener
             }
-        } else {
-            // Default status if there are no previous updates
-            callback("Dispatched")
+
+
+            if (items.isNotEmpty()) {
+                val lastItem = items.last()
+
+
+                if (lastItem.location == "Location : $location" &&
+                    lastItem.logistics == "Logistics : $company" &&
+                    lastItem.pincode == "Pin Code : $pincode") {
+
+                    // Toggle between "Dispatched" and "Received"
+                    val status = if (lastItem.status == "Dispatched") {
+                        "Received"
+                    } else {
+                        "Dispatched"
+                    }
+
+                    callback(status)
+                } else {
+                    callback("Received")
+                }
+            } else {
+                callback("Dispatched") 
+            }
         }
     }
+
 
 
 
