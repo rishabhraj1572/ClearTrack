@@ -75,12 +75,10 @@ class SignupActivity : AppCompatActivity() {
     private fun registerUser(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
+                progressbar.dismiss()  // ✅
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
-//                    startActivity(Intent(this,HomeActivity::class.java))
-
                     userId = auth.currentUser?.uid
-                    //ask user
                     val userDetails = mapOf(
                         "user_id" to userId,
                         "address" to "null",
@@ -91,21 +89,20 @@ class SignupActivity : AppCompatActivity() {
 
                     userId?.let {
                         db.collection("users").document(it).set(userDetails)
-                            .addOnSuccessListener { documentReference ->
+                            .addOnSuccessListener {
                                 showLogisticPartnerDialog()
                             }
                             .addOnFailureListener { e ->
+                                Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show()
                             }
                     }
 
-//                    showLogisticPartnerDialog()
-
-//                    finishAffinity()
                 } else {
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
 
     private fun showLogisticPartnerDialog() {
         val builder = AlertDialog.Builder(this)
