@@ -253,7 +253,7 @@ class CreateOrderActivity : AppCompatActivity() {
         if (uri != null) {
             fileReference.putFile(uri)
 
-                //1)upload successfull
+                //1)upload successful
                 .addOnSuccessListener {
                     if(is_pdf){
 
@@ -291,7 +291,7 @@ class CreateOrderActivity : AppCompatActivity() {
                     if(!allDone){
 //                        progressBar.visibility = View.GONE
                         progressbar.dismiss()
-                        val intent = Intent(this@CreateOrderActivity,QRGenerateActivity::class.java)
+                        val intent = Intent(this@CreateOrderActivity,DeliveryOptionActivity::class.java)
                         intent.putExtra("orderId",orderID)
                         startActivity(intent)
 

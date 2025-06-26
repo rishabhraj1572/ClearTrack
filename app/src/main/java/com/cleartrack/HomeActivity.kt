@@ -46,7 +46,10 @@ class HomeActivity : AppCompatActivity() {
         var myOrder: Button = findViewById(R.id.myOrders)
 
         myOrder.setOnClickListener{
-            startActivity(Intent(this,MyOrdersActivity::class.java))
+//            startActivity(Intent(this,MyOrdersActivity::class.java))
+            val intent = Intent(this,MyOrdersActivity::class.java)
+            intent.putExtra("isLogistic",isLogistic)
+            startActivity(intent)
         }
 
 

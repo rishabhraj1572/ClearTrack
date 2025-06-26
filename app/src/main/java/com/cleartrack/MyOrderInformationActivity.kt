@@ -10,6 +10,7 @@ import android.os.Environment
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
@@ -23,12 +24,15 @@ class MyOrderInformationActivity : AppCompatActivity(){
     private lateinit var qrCodeIV: ImageView
     private lateinit var showDetailsBtn : Button
 
+    private var logistic :String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.my_order_information)
 
         val qr_url = intent.getStringExtra("qr_url")
         val orderId = intent.getStringExtra("orderId")
+        logistic = intent.getStringExtra("isLogistic")
 
         qrCodeIV = findViewById(R.id.idIVQrcode)
 
@@ -61,6 +65,18 @@ class MyOrderInformationActivity : AppCompatActivity(){
             intent.putExtra("orderId",orderId)
             startActivity(intent)
         }
+
+
+        val trackBtn = findViewById<Button>(R.id.track)
+
+        trackBtn.setOnClickListener{
+            val i : Intent = Intent(this,UpdatesActivity::class.java)
+            i.putExtra("isLogistic",logistic)
+            i.putExtra("orderId","$orderId")
+            //startActivity(Intent(this,UpdatesActivity::class.java))
+            startActivity(i)
+        }
+
 
 
     }

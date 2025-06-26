@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DeliveryOptionsActivity"
+    android:padding="24dp"
+    android:background="#ffffff">
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose Delivery Option"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#133d59"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupDelivery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioExpress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Express - $102, arrives in 7-8 days"
+            android:textSize="16sp"
+            android:textColor="#000000" />
+
+        <RadioButton
+            android:id="@+id/radioCostEffective"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cost Effective - $55, arrives in 25 days"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:layout_marginTop="10dp" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:layout_below="@id/radioGroupDelivery"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:drawablePadding="10dp" />
+
+</RelativeLayout>

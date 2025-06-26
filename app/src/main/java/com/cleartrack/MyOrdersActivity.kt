@@ -41,6 +41,7 @@ class MyOrdersActivity : AppCompatActivity() {
                 val qr_url = clickedItem.qr_url
 
                 val i = Intent(this@MyOrdersActivity,MyOrderInformationActivity::class.java)
+                i.putExtra("isLogistic",intent.getStringExtra("isLogistic"))
                 i.putExtra("orderId",orderId)
                 i.putExtra("status",status)
                 i.putExtra("qr_url",qr_url)
